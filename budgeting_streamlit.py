@@ -13,9 +13,6 @@ import dateutil.relativedelta
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-engine = create_engine('sqlite:////Users/marvinchan/Documents/PythonProgramming/DatabaseforStatements/BudgetingProject/transactions_ledger.db', echo=False)
-connection = engine.raw_connection()
-
 def main():
     data = load_data()
     page = st.sidebar.selectbox("Choose a page", ["Homepage", "Analysis"])
