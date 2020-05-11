@@ -1,6 +1,6 @@
 README.md
 
-# Budgeting Streamliit Dashboard
+# Budgeting Streamlit Dashboard
 
 This is an extension of my Budgeting Project.
 
