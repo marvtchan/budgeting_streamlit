@@ -24,4 +24,4 @@ A preview of the filtered data and raw data is also shown:
 Here is a short video presentation of the webpage:
 
 
-![ezgif com-video-to-gif](https://user-images.githubusercontent.com/49408616/81757013-456a5300-9472-11ea-96ff-e5d6c4aee15f.gif)
+![ezgif com-video-to-gif (1)](https://user-images.githubusercontent.com/49408616/81757162-caee0300-9472-11ea-9fde-5654f0d97333.gif)
