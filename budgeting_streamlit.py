@@ -12,10 +12,10 @@ from datetime import timedelta
 import dateutil.relativedelta
 import seaborn as sns
 import matplotlib.pyplot as plt
+import sqlite3  
 
 def main():
-    data = load_data()
-    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Analysis"])
+    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Analysis", "Change Data"])
 
     if page == "Homepage":
         st.title("💸Budgeting Analysis💸")
@@ -57,6 +57,7 @@ def main():
         The data is explored with a seaborn bar chart.
         """)
     elif page == "Analysis":
+        data = load_data()
         st.title("📈Analysis📉")
         st.markdown(
         """
@@ -76,13 +77,24 @@ def main():
         start_date, end_date = get_dates()
         selected_filtered_data, categories, filtered = filter_data(data, start_date, end_date)
         get_chart(selected_filtered_data, start_date, end_date, categories, filtered)
+    elif page == "Change Data":
+        data = load_data()
+        st.title("Edit Data🗄")
+        st.markdown(
+        """
+        To change the category of a transaction enter the index of the transaction and the correct category.
 
+        Pressing the execute button will update the SQLite Database.
+
+        """)
+        update_category(data)
 
 
 @st.cache(persist=True)
 def load_data():
     engine = create_engine('sqlite:////Users/marvinchan/Documents/PythonProgramming/DatabaseforStatements/BudgetingProject/transactions_ledger.db', echo=False)
     connection = engine.raw_connection()
+    cursor = connection.cursor()
     data = pd.read_sql_query('SELECT * FROM transactions_categorized_aggregate', connection)
     data['Date'] = pd.to_datetime(data['Date'], format='%Y-%m-%d')
     data = data.sort_values(by=['Date'])
@@ -130,6 +142,24 @@ def get_chart(selected_filtered_data, start_date, end_date, categories, filtered
     if st.checkbox("Display total data", False):
         st.subheader("Raw data by date between '%s' and '%s'" % (start_date, end_date))
         st.write(filtered)
+
+def update_category(data):
+    index = st.text_input("Enter Index")
+    category = st.selectbox("Enter Category", data['Category'].unique())
+    connection = sqlite3.connect('////Users/marvinchan/Documents/PythonProgramming/DatabaseforStatements/BudgetingProject/transactions_ledger.db')
+    cursor = connection.cursor()
+    if st.button("Execute"):
+        sql_update_query = "UPDATE transactions_categorized_aggregate SET Category=? WHERE rowid=?"
+        cursor.execute(sql_update_query, (category, (int(index) + 1 )))
+        connection.commit()
+        st.success("Line " + str(index) + " Category updated to: " + category)
+        query = pd.read_sql_query('SELECT * FROM transactions_categorized_aggregate', connection)
+        cursor.close()
+        connection.close()
+        st.write(query.ix[int(index)])
+
+
+
 
 if __name__ == "__main__":
     main()
