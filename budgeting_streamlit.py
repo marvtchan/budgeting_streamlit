@@ -13,6 +13,7 @@ import dateutil.relativedelta
 import seaborn as sns
 import matplotlib.pyplot as plt
 import sqlite3  
+from streamlit import caching
 
 def main():
     page = st.sidebar.selectbox("Choose a page", ["Homepage", "Analysis", "Change Data"])
@@ -57,6 +58,7 @@ def main():
         The data is explored with a seaborn bar chart.
         """)
     elif page == "Analysis":
+        caching.clear_cache()
         data = load_data()
         st.title("📈Analysis📉")
         st.markdown(
@@ -150,13 +152,17 @@ def update_category(data):
     cursor = connection.cursor()
     if st.button("Execute"):
         sql_update_query = "UPDATE transactions_categorized_aggregate SET Category=? WHERE rowid=?"
-        cursor.execute(sql_update_query, (category, (int(index) + 1 )))
-        connection.commit()
-        st.success("Line " + str(index) + " Category updated to: " + category)
-        query = pd.read_sql_query('SELECT * FROM transactions_categorized_aggregate', connection)
-        cursor.close()
-        connection.close()
-        st.write(query.ix[int(index)])
+        try:
+            cursor.execute(sql_update_query, (category, (int(index) + 1 )))
+            connection.commit()
+            query = pd.read_sql_query('SELECT * FROM transactions_categorized_aggregate', connection)
+            cursor.close()
+            connection.close()
+            st.write(query.ix[int(index)])
+            st.success("Line " + str(index) + " Category updated to: " + category)
+        except (ValueError, KeyError):
+            st.error('Inputted index does not exist.')
+
 
 
 
