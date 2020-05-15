@@ -1,19 +1,22 @@
 # streamlit_example.py
 import streamlit as st
-import pandas as pd
-import numpy as np
-import altair as alt
-import pydeck as pdk
+from streamlit import caching
+
+import sqlite3  
 from sqlalchemy import create_engine, select, MetaData, Table, Integer, String, inspect, Column, ForeignKey
 import os
+
 import datetime as dt
 from datetime import datetime
 from datetime import timedelta
 import dateutil.relativedelta
+
+import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import sqlite3  
-from streamlit import caching
+
+
 
 def main():
     page = st.sidebar.selectbox("Choose a page", ["Homepage", "Analysis", "Change Data"])
@@ -57,6 +60,10 @@ def main():
 
         The data is explored with a seaborn bar chart.
         """)
+        st.sidebar.text(" ")
+        st.sidebar.text(" ")
+        st.sidebar.text(" ")
+        st.sidebar.success('Explore the datasets with the \'Analysis\' page or edit the category of a transaction with the \'Change Data\' page.')
     elif page == "Analysis":
         caching.clear_cache()
         data = load_data()
