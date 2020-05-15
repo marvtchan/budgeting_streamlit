@@ -20,6 +20,9 @@ A preview of the filtered data and raw data is also shown:
 
 ![image](https://user-images.githubusercontent.com/49408616/81531118-ff4cac80-9316-11ea-9e2f-9c260ef1799c.png)
 
+On the Change Data page the user can single out an index and change the category of a transaction. This will update the SQLite database and provide a more accurate training set for the next month's model.
+
+![image](https://user-images.githubusercontent.com/49408616/82097429-bb133080-96b7-11ea-8933-2b7e266a28e2.png)
 
 Here is a short video presentation of the webpage:
 
