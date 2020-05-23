@@ -2,15 +2,18 @@
 import streamlit as st
 from streamlit import caching
 
+#database
 import sqlite3  
 from sqlalchemy import create_engine, select, MetaData, Table, Integer, String, inspect, Column, ForeignKey
 import os
 
+#date 
 import datetime as dt
 from datetime import datetime
 from datetime import timedelta
 import dateutil.relativedelta
 
+#analysis and visualization
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -19,6 +22,7 @@ import matplotlib.pyplot as plt
 
 
 def main():
+    ### Allows user to select between pages###
     page = st.sidebar.selectbox("Choose a page", ["Homepage", "Analysis", "Change Data"])
 
     if page == "Homepage":
@@ -99,6 +103,7 @@ def main():
         update_category(data)
 
 
+#Function to load data from database
 @st.cache(persist=True)
 def load_data():
     engine = create_engine('sqlite:////Users/marvinchan/Documents/PythonProgramming/DatabaseforStatements/BudgetingProject/transactions_ledger.db', echo=False)
@@ -109,6 +114,7 @@ def load_data():
     data = data.sort_values(by=['Date'])
     return data
 
+#Function for dates
 def get_dates():
     start_str = "2019-01-01"
     start = datetime.strptime(start_str, '%Y-%m-%d')
@@ -123,6 +129,7 @@ def get_dates():
         st.error('Error: End date must fall after start date.')
     return start_date, end_date    
 
+#Function to filter data with chosen dates and categories
 def filter_data(data, start_date, end_date):
     filtered = data[
     (data['Date'] >= start_date) & (data['Date'].dt.date <= (end_date))
@@ -131,7 +138,7 @@ def filter_data(data, start_date, end_date):
     selected_filtered_data = filtered[(filtered['Category'].isin(categories))]
     return selected_filtered_data, categories, filtered
 
-
+#Create charts with filtered data
 def get_chart(selected_filtered_data, start_date, end_date, categories, filtered):
     try:
         ax = sns.barplot(y ="Amount", data=selected_filtered_data, palette="GnBu_d", x='Month', ci=None, estimator=sum)
@@ -152,6 +159,7 @@ def get_chart(selected_filtered_data, start_date, end_date, categories, filtered
         st.subheader("Raw data by date between '%s' and '%s'" % (start_date, end_date))
         st.write(filtered)
 
+#Function to update database with new category
 def update_category(data):
     index = st.text_input("Enter Index")
     category = st.selectbox("Enter Category", data['Category'].unique())
