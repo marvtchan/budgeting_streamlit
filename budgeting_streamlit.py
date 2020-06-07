@@ -18,6 +18,8 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import altair as alt
+alt.data_transformers.disable_max_rows()
 
 
 
@@ -90,6 +92,11 @@ def main():
         start_date, end_date = get_dates()
         selected_filtered_data, categories, filtered = filter_data(data, start_date, end_date)
         get_chart(selected_filtered_data, start_date, end_date, categories, filtered)
+        if st.checkbox("Scatter with all data", False):
+            binned_scatter(data)
+        else:
+            binned_scatter(selected_filtered_data)
+
     elif page == "Change Data":
         data = load_data()
         st.title("Edit Data🗄")
@@ -179,7 +186,18 @@ def update_category(data):
             st.error('Inputted index does not exist.')
 
 
-
+def binned_scatter(df):
+    source = df
+    chart = alt.Chart(source).mark_circle().properties(
+    width = 700,
+    height = 500,
+    ).encode(
+        alt.X('Date', bin=False),
+        alt.Y('Amount', bin=False),
+        color='Category',
+        tooltip=['Date', 'Category', 'Amount']
+    ).interactive()
+    st.altair_chart(chart)
 
 
 if __name__ == "__main__":
