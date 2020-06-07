@@ -96,6 +96,19 @@ def main():
             binned_scatter(data)
         else:
             binned_scatter(selected_filtered_data)
+        if st.checkbox("Horizontal Bar with all data", False):
+            horizontal_bar(data)
+        else:
+            horizontal_bar(selected_filtered_data)
+
+        categorical_data_is_check = st.checkbox("Display the data of selected categories")
+        if categorical_data_is_check:
+            st.subheader("Filtered data by date between '%s' and '%s' for '%s" % (start_date, end_date, categories))
+            st.write(selected_filtered_data)
+
+        if st.checkbox("Display total data", False):
+            st.subheader("Raw data by date between '%s' and '%s'" % (start_date, end_date))
+            st.write(filtered)
 
     elif page == "Change Data":
         data = load_data()
@@ -157,14 +170,7 @@ def get_chart(selected_filtered_data, start_date, end_date, categories, filtered
     except ValueError:
         st.error('Select Categories for bar chart.')
 
-    categorical_data_is_check = st.checkbox("Display the data of selected categories")
-    if categorical_data_is_check:
-        st.subheader("Filtered data by date between '%s' and '%s' for '%s" % (start_date, end_date, categories))
-        st.write(selected_filtered_data)
 
-    if st.checkbox("Display total data", False):
-        st.subheader("Raw data by date between '%s' and '%s'" % (start_date, end_date))
-        st.write(filtered)
 
 #Function to update database with new category
 def update_category(data):
@@ -192,10 +198,24 @@ def binned_scatter(df):
     width = 700,
     height = 500,
     ).encode(
-        alt.X('Date', bin=False),
-        alt.Y('Amount', bin=False),
-        color='Category',
+        alt.X('Date'),
+        alt.Y('Amount'),
+        color='Month',
+        size='count(Category)',
         tooltip=['Date', 'Category', 'Amount']
+    ).interactive()
+    st.altair_chart(chart)
+
+def horizontal_bar(df):
+    source = df
+    chart = alt.Chart(source).mark_bar().properties(
+    width = 700,
+    height = 500,
+    ).encode(
+        alt.X('Amount'),
+        alt.Y('Category'),
+        color='Month',
+        tooltip=['Category', 'sum(Amount)']
     ).interactive()
     st.altair_chart(chart)
 
